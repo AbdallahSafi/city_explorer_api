@@ -20,22 +20,42 @@ server.listen(PORT, () => {
 // localhost:3010/location
 server.get('/location', (request, response) => {
   let city = request.query.city;
-  let status = 200;
-  let data = require('./data/location.json');
-  let getLocation = new Location(city, data);
-  response.status(status).send(getLocation);
+  if (!city || !isNaN(city)) {
+    let status = 500;
+    response
+      .status(status)
+      .send({ status: status, msg: 'Sorry, something went wrong' });
+  } else {
+    let status = 200;
+    let data = require('./data/location.json');
+    let getLocation = new Location(city, data);
+    response.status(status).send(getLocation);
+  }
 });
 
 // localhost:3010/weather
 server.get('/weather', (request, response) => {
   let city = request.query.city;
-  let status = 200;
-  let weatherData = require('./data/weather.json');
-  Weather.weathers= [];
-  weatherData.data.forEach((e) => {
-    new Weather(city, e);
-  });
-  response.status(status).send(Weather.weathers);
+  if (!city || !isNaN(city)) {
+    let status = 500;
+    response
+      .status(status)
+      .send({ status: status, msg: 'Sorry, something went wrong' });
+  } else {
+    let status = 200;
+    let weatherData = require('./data/weather.json');
+    Weather.weathers = [];
+    weatherData.data.forEach((e) => {
+      new Weather(city, e);
+    });
+    response.status(status).send(Weather.weathers);
+  }
+});
+
+// handle 404 error
+server.all('*', (request, response) => {
+  let status = 404;
+  response.status(status).send({ status: status, msg: 'Not Found' });
 });
 
 // constructor function formate the location responed data
@@ -53,4 +73,3 @@ function Weather(city, data) {
   this.time = dateObj.toDateString();
   Weather.weathers.push(this);
 }
-
