@@ -31,11 +31,12 @@ server.get('/weather', (request, response) => {
   let city = request.query.city;
   let status = 200;
   let weatherData = require('./data/weather.json');
-  let getLocation = new Location(city, weatherData);
-  response.status(status).send(getLocation);
+  Weather.weathers= [];
+  weatherData.data.forEach((e) => {
+    new Weather(city, e);
+  });
+  response.status(status).send(Weather.weathers);
 });
-
-
 
 // constructor function formate the location responed data
 function Location(city, data) {
@@ -46,10 +47,10 @@ function Location(city, data) {
 }
 
 // constructor function formate the weather responed data
-let weathers = [];
 function Weather(city, data) {
   this.forecast = data.weather.description;
-  this.time = data.valid_date;
-  weathers.push(this);
+  const dateObj = new Date(data.valid_date);
+  this.time = dateObj.toDateString();
+  Weather.weathers.push(this);
 }
 
