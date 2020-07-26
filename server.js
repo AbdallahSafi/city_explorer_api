@@ -17,8 +17,18 @@ server.listen(PORT, () => {
   console.log('I am listening to port: ', PORT);
 });
 
-// localhost:3000/test
-server.get('/test/?page=2', (request, response) => {
-  let page = request.query.page;
-  response.send('You are awesome!', page);
+// localhost:3010/location
+server.get('/location', (request, response) => {
+  let city = request.query.city;
+  let status = 200;
+  let data = require('./data/location.json');
+  let getLocation = new Location(city, data);
+  response.status(status).send(getLocation);
 });
+
+function Location(city, data) {
+  this.search_query = city;
+  this.formatted_query = data[0].display_name;
+  this.latitude = data[0].lat;
+  this.longitude = data[0].lon;
+}
