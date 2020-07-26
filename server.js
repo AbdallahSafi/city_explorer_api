@@ -9,8 +9,6 @@ require('dotenv').config();
 const server = express();
 server.use(cors());
 
-
-
 // Declare a port
 const PORT = process.env.PORT || 3000;
 
@@ -19,8 +17,8 @@ server.listen(PORT, () => {
   console.log('I am listening to port: ', PORT);
 });
 
-
 // localhost:3000/test
-server.get('/test', (request, response) => {
-  response.send('You are awesome!');
+server.get('/test/?page=2', (request, response) => {
+  let page = request.query.page;
+  response.send('You are awesome!', page);
 });
