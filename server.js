@@ -24,7 +24,7 @@ server.get('/location', (request, response) => {
     let status = 500;
     response
       .status(status)
-      .send({ status: status, msg: 'Sorry, something went wrong' });
+      .send({ status: status, responseText: 'Sorry, something went wrong' });
   } else {
     let status = 200;
     let data = require('./data/location.json');
@@ -40,7 +40,7 @@ server.get('/weather', (request, response) => {
     let status = 500;
     response
       .status(status)
-      .send({ status: status, msg: 'Sorry, something went wrong' });
+      .send({ status: status, responseText: 'Sorry, something went wrong' });
   } else {
     let status = 200;
     let weatherData = require('./data/weather.json');
@@ -55,7 +55,7 @@ server.get('/weather', (request, response) => {
 // handle 404 error
 server.all('*', (request, response) => {
   let status = 404;
-  response.status(status).send({ status: status, msg: 'Not Found' });
+  response.status(status).send({ status: status, responseText: 'Not Found' });
 });
 
 // constructor function formate the location responed data
