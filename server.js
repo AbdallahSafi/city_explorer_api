@@ -57,7 +57,7 @@ server.get('/weather', (request, response) => {
 // handle 500 error
 server.all('*', (request, response) => {
   let status = 500;
-  response.status(status).send({ 'status': status, 'responseText': 'Not Found' });
+  response.status(status).send('Not Found');
 });
 
 // constructor function formate the location responed data
