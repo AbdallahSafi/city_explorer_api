@@ -37,7 +37,7 @@ server.get("/location", async (request, response) => {
 
 // localhost:3010/weather
 server.get("/weather", async (request, response) => {
-  let city = request.query.city;
+  let city = request.query.search_query;
   let status = 200;
   response.status(status).send(await getWeather(city));
 });
