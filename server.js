@@ -1,6 +1,5 @@
 'use strict';
 
-
 // Decalaring varaibles
 const express = require('express');
 var cors = require('cors');
@@ -34,6 +33,8 @@ server.get('/location', (request, response) => {
   }
 });
 
+let weathers = [];
+
 // localhost:3010/weather
 server.get('/weather', (request, response) => {
   let city = request.query.city;
@@ -45,11 +46,11 @@ server.get('/weather', (request, response) => {
   } else {
     let status = 200;
     let weatherData = require('./data/weather.json');
-    Weather.weathers = [];
+    weathers = [];
     weatherData.data.forEach((e) => {
       new Weather(city, e);
     });
-    response.status(status).send(Weather.weathers);
+    response.status(status).send(weathers);
   }
 });
 
@@ -72,5 +73,6 @@ function Weather(city, data) {
   this.forecast = data.weather.description;
   const dateObj = new Date(data.valid_date);
   this.time = dateObj.toDateString();
-  Weather.weathers.push(this);
+  // Weather.weathers.push(this);
+  weathers.push(this);
 }
