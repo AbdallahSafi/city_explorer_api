@@ -20,12 +20,6 @@ server.listen(PORT, () => {
 // localhost:3010/location
 server.get('/location', (request, response) => {
   let city = request.query.city;
-  // if (!city || !isNaN(city)) {
-  //   let status = 500;
-  //   response
-  //     .status(status)
-  //     .send({ status: status, responseText: 'Sorry, something went wrong' });
-  // } else {
   let status = 200;
   let data = require('./data/location.json');
   let getLocation = new Location(city, data);
@@ -34,16 +28,9 @@ server.get('/location', (request, response) => {
 });
 
 let weathers = [];
-
 // localhost:3010/weather
 server.get('/weather', (request, response) => {
   let city = request.query.city;
-  // if (!city || !isNaN(city)) {
-  //   let status = 500;
-  //   response
-  //     .status(status)
-  //     .send({ status: status, responseText: 'Sorry, something went wrong' });
-  // } else {
   let status = 200;
   let weatherData = require('./data/weather.json');
   weathers = [];
@@ -73,6 +60,5 @@ function Weather(city, data) {
   this.forecast = data.weather.description;
   const dateObj = new Date(data.valid_date);
   this.time = dateObj.toDateString();
-  // Weather.weathers.push(this);
   weathers.push(this);
 }
