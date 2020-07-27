@@ -48,7 +48,7 @@ server.get("/weather", async (request, response) => {
 // localhost:3010/trails
 server.get("/trails", async (request, response) => {
   let lat = request.query.latitude;
-  let lon = request.query.logtitude;
+  let lon = request.query.logitude;
   let status = 200;
   response.status(status).send(await getTrails(lat, lon));
 });
