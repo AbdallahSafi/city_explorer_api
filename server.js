@@ -20,17 +20,17 @@ server.listen(PORT, () => {
 // localhost:3010/location
 server.get('/location', (request, response) => {
   let city = request.query.city;
-  if (!city || !isNaN(city)) {
-    let status = 500;
-    response
-      .status(status)
-      .send({ status: status, responseText: 'Sorry, something went wrong' });
-  } else {
-    let status = 200;
-    let data = require('./data/location.json');
-    let getLocation = new Location(city, data);
-    response.status(status).send(getLocation);
-  }
+  // if (!city || !isNaN(city)) {
+  //   let status = 500;
+  //   response
+  //     .status(status)
+  //     .send({ status: status, responseText: 'Sorry, something went wrong' });
+  // } else {
+  let status = 200;
+  let data = require('./data/location.json');
+  let getLocation = new Location(city, data);
+  response.status(status).send(getLocation);
+  // }
 });
 
 let weathers = [];
@@ -38,20 +38,20 @@ let weathers = [];
 // localhost:3010/weather
 server.get('/weather', (request, response) => {
   let city = request.query.city;
-  if (!city || !isNaN(city)) {
-    let status = 500;
-    response
-      .status(status)
-      .send({ status: status, responseText: 'Sorry, something went wrong' });
-  } else {
-    let status = 200;
-    let weatherData = require('./data/weather.json');
-    weathers = [];
-    weatherData.data.forEach((e) => {
-      new Weather(city, e);
-    });
-    response.status(status).send(weathers);
-  }
+  // if (!city || !isNaN(city)) {
+  //   let status = 500;
+  //   response
+  //     .status(status)
+  //     .send({ status: status, responseText: 'Sorry, something went wrong' });
+  // } else {
+  let status = 200;
+  let weatherData = require('./data/weather.json');
+  weathers = [];
+  weatherData.data.forEach((e) => {
+    new Weather(city, e);
+  });
+  response.status(status).send(weathers);
+  // }
 });
 
 // handle 404 error
