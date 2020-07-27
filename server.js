@@ -56,7 +56,7 @@ server.get('/weather', (request, response) => {
 
 // handle 404 error
 server.all('*', (request, response) => {
-  let status = 404;
+  let status = 500;
   response.status(status).send({ status: status, responseText: 'Not Found' });
 });
 
