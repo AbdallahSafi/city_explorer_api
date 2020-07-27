@@ -21,31 +21,35 @@ server.listen(PORT, () => {
 server.get('/location', (request, response) => {
   let city = request.query.city;
   let status = 200;
-  let data = require('./data/location.json');
-  let getLocation = new Location(city, data);
-  response.status(status).send(getLocation);
-  // }
+  response.status(status).send(getLocation(city));
 });
 
-let weathers = [];
 // localhost:3010/weather
 server.get('/weather', (request, response) => {
-  let city = request.query.city;
   let status = 200;
-  let weatherData = require('./data/weather.json');
-  weathers = [];
-  weatherData.data.forEach((e) => {
-    new Weather(city, e);
-  });
-  response.status(status).send(weathers);
-  // }
+  response.status(status).send(getWeather());
 });
 
 // handle 500 error
 server.all('*', (request, response) => {
-  let status = 500;
+  let status = 404;
   response.status(status).send('Not Found');
 });
+
+
+// function to get location data
+function getLocation(city){
+  let data = require('./data/location.json');
+  return new Location(city, data);
+}
+// function to get weather data
+function getWeather() {
+  let weatherData = require('./data/weather.json');
+  return weatherData.data.map((e) => {
+    return new Weather(e);
+  });
+}
+
 
 // constructor function formate the location responed data
 function Location(city, data) {
@@ -56,9 +60,9 @@ function Location(city, data) {
 }
 
 // constructor function formate the weather responed data
-function Weather(city, data) {
+function Weather(data) {
   this.forecast = data.weather.description;
   const dateObj = new Date(data.valid_date);
   this.time = dateObj.toDateString();
-  weathers.push(this);
 }
+
