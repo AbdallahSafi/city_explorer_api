@@ -17,8 +17,11 @@ const superagent = require("superagent");
 // Declare a port
 const PORT = process.env.PORT || 3000;
 
-//API key
-const API_KEY = process.env.GEOCODE_API_KEY;
+//API key for locations
+const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
+
+//API key for weather
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 
 // Test the server
 server.listen(PORT, () => {
@@ -33,9 +36,10 @@ server.get("/location", async (request, response) => {
 });
 
 // localhost:3010/weather
-server.get("/weather", (request, response) => {
+server.get("/weather", async (request, response) => {
+  let city = request.query.city;
   let status = 200;
-  response.status(status).send(getWeather());
+  response.status(status).send(await getWeather(city));
 });
 
 // handle 500 error
@@ -46,21 +50,22 @@ server.all("*", (request, response) => {
 
 // function to get location data
 function getLocation(city) {
-  // let data = require('./data/location.json');
-  let url = `https://api.locationiq.com/v1/autocomplete.php?key=${API_KEY}&q=${city}`;
+  let url = `https://api.locationiq.com/v1/autocomplete.php?key=${GEOCODE_API_KEY}&q=${city}`;
   let data = superagent.get(url).then((res) => {
     return new Location(city, res.body);
   });
   return data;
 }
 
-
 // function to get weather data
-function getWeather() {
-  let weatherData = require("./data/weather.json");
-  return weatherData.data.map((e) => {
-    return new Weather(e);
+function getWeather(city) {
+  let url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${WEATHER_API_KEY}&days=5`;
+  let data = superagent.get(url).then((res) => {
+    return res.body.data.map((e) => {
+      return new Weather(e);
+    });
   });
+  return data;
 }
 
 // constructor function formate the location responed data
