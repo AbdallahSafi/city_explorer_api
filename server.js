@@ -90,7 +90,7 @@ function getTrails(lat, lon) {
       });
     })
     .catch((e) => {
-      console.log(e;
+      console.log(e);
     });
   return data;
 }
