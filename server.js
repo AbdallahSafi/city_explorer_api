@@ -162,20 +162,3 @@ function saveToDB(data) {
     console.log("saved", result.rows);
   });
 }
-// server.get("/student", (req, res) => {
-//   let sql = "SELECT * FROM students";
-//   db.query(SQL).then((result) => {
-//     res.status(200).send(result.rows);
-//   });
-// });
-
-// server.get("/addStudent", (req, res) => {
-//   let first_name = req.query.fname;
-//   let address = req.query.address;
-//   let sql = `INSERT INTO student (first_name, student_address) VALUES ($1,$2)`;
-//   let values = [first_name, address];
-//   db.query(SQL, values).then((result) => {
-//     res.status(200).json(result.rows);
-//   });
-// });
-// INSERT INTO location(search_query,formatted_query,latitude,longitude) VALUES('Gaza','formatted_query', 24, 33);

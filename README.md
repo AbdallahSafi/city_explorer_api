@@ -35,7 +35,7 @@ This application was build with Node.js and it includes:
 - dotenv.js library
 
 ## Change Log
-26-07-2020 3:30pm - Application now has a fully-functional express server, with a GET route for the location resource.
+28-07-2020 3:30pm - Application now has a fully-functional express server, with a GET route for the location resource.
 
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
