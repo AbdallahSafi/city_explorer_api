@@ -46,11 +46,11 @@ server.get("/weather", async (request, response) => {
 });
 
 // localhost:3010/trails
-server.get("/trails", async (request, response) => {
+server.get("/trails",  (request, response) => {
   let lat = request.query.latitude;
   let lon = request.query.logitude;
   let status = 200;
-  response.status(status).send(await getTrails(lat, lon));
+  response.status(status).send( getTrails(lat, lon));
 });
 
 // handle 500 error
