@@ -2,8 +2,12 @@
 
 // Decalaring varaibles
 const express = require("express");
-var cors = require("cors");
+const cors = require("cors");
 require("dotenv").config();
+const pg = require("pg");
+
+//create connection to database
+var db = new pg.Client(process.env.DATABASE_URL);
 
 // initialize the server
 const server = express();
@@ -26,9 +30,11 @@ const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 //API key for hiking
 const TRAIL_API_KEY = process.env.TRAIL_API_KEY;
 
-// Test the server
-server.listen(PORT, () => {
-  console.log("I am listening to port: ", PORT);
+// Test the server and connect to database
+db.connect().then(() => {
+  server.listen(PORT, () => {
+    console.log("I am listening to port: ", PORT);
+  });
 });
 
 // localhost:3010/location?city = gaza
@@ -124,3 +130,20 @@ function Trails(data) {
   this.condition_date = day.toLocaleDateString();
   this.condition_time = day.toLocaleTimeString("en-US");
 }
+
+server.get("/student", (req, res) => {
+  let sql = "SELECT * FROM students";
+  db.query(SQL).then((result) => {
+    res.status(200).send(result.rows);
+  });
+});
+
+server.get("/addStudent", (req, res) => {
+  let first_name = req.query.fname;
+  let address = req.query.address;
+  let sql = `INSERT INTO student (first_name, student_address) VALUES ($1,$2)`;
+  let values = [first_name, address];
+  db.query(SQL, values).then((result) => {
+    res.status(200).json(result.rows);
+  });
+});
