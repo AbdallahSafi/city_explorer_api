@@ -46,11 +46,11 @@ server.get("/weather", async (request, response) => {
 });
 
 // localhost:3010/trails
-server.get("/trails",  (request, response) => {
+server.get("/trails", async (request, response) => {
   let lat = request.query.latitude;
-  let lon = request.query.logitude;
+  let lon = request.query.longitude;
   let status = 200;
-  response.status(status).send( getTrails(lat, lon));
+  response.status(status).send(await getTrails(lat, lon));
 });
 
 // handle 500 error
@@ -82,12 +82,16 @@ function getWeather(city) {
 // function to get weather data
 function getTrails(lat, lon) {
   let url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=1000&key=${TRAIL_API_KEY}`;
-  let data = superagent.get(url).then((res) => {
-    return res.body.trails.map((e) => {
-      console.log(e);
-      return new Trails(e);
+  let data = superagent
+    .get(url)
+    .then((res) => {
+      return res.body.trails.map((e) => {
+        return new Trails(e);
+      });
+    })
+    .catch((e) => {
+      console.log(e;
     });
-  });
   return data;
 }
 
