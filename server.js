@@ -41,7 +41,16 @@ db.connect().then(() => {
 server.get("/location", async (request, response) => {
   let city = request.query.city;
   let status = 200;
-  response.status(status).send(await getLocation(city));
+  let dataRetrived = await getLocationDB(city);
+  if (dataRetrived.length === 0) {
+    await getLocation(city).then((data) => {
+      saveToDB(data);
+      response.status(status).send(data);
+    });
+  } else {
+    delete dataRetrived[0].id;
+    response.status(status).send(dataRetrived[0]);
+  }
 });
 
 // localhost:3010/weather?search_query=gaza
@@ -131,19 +140,42 @@ function Trails(data) {
   this.condition_time = day.toLocaleTimeString("en-US");
 }
 
-server.get("/student", (req, res) => {
-  let sql = "SELECT * FROM students";
-  db.query(SQL).then((result) => {
-    res.status(200).send(result.rows);
+// function to check the database for exist value
+function getLocationDB(city) {
+  let sql = `SELECT * FROM location WHERE search_query=$1;`;
+  let values = [city];
+  return db.query(sql, values).then((result) => {
+    return result.rows;
   });
-});
+}
 
-server.get("/addStudent", (req, res) => {
-  let first_name = req.query.fname;
-  let address = req.query.address;
-  let sql = `INSERT INTO student (first_name, student_address) VALUES ($1,$2)`;
-  let values = [first_name, address];
-  db.query(SQL, values).then((result) => {
-    res.status(200).json(result.rows);
+function saveToDB(data) {
+  console.log("before saving", data);
+  let sql = `INSERT INTO location (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4)`;
+  let values = [
+    data.search_query,
+    data.formatted_query,
+    data.latitude,
+    data.longitude,
+  ];
+  db.query(sql, values).then((result) => {
+    console.log("saved", result.rows);
   });
-});
+}
+// server.get("/student", (req, res) => {
+//   let sql = "SELECT * FROM students";
+//   db.query(SQL).then((result) => {
+//     res.status(200).send(result.rows);
+//   });
+// });
+
+// server.get("/addStudent", (req, res) => {
+//   let first_name = req.query.fname;
+//   let address = req.query.address;
+//   let sql = `INSERT INTO student (first_name, student_address) VALUES ($1,$2)`;
+//   let values = [first_name, address];
+//   db.query(SQL, values).then((result) => {
+//     res.status(200).json(result.rows);
+//   });
+// });
+// INSERT INTO location(search_query,formatted_query,latitude,longitude) VALUES('Gaza','formatted_query', 24, 33);
