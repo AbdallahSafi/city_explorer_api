@@ -81,7 +81,7 @@ function getWeather(city) {
 
 // function to get weather data
 function getTrails(lat, lon) {
-  let url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=-${lon}&maxDistance=10&key=${TRAIL_API_KEY}`;
+  let url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=1000&key=${TRAIL_API_KEY}`;
   let data = superagent.get(url).then((res) => {
     return res.body.trails.map((e) => {
       console.log(e);
