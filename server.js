@@ -85,12 +85,23 @@ server.get("/movies", async (request, response) => {
   response.status(status).send(await getMovies(region));
 });
 
+// yelp
+server.get("/yelp", async (request, response) => {
+  let lat = request.query.latitude;
+  let lon = request.query.longitude;
+  let status = 200;
+  response.status(status).send(await getYelp(lat, lon));
+});
+
+
 
 // handle 500 error
 server.all("*", (request, response) => {
   let status = 404;
   response.status(status).send("Not Found");
 });
+
+
 // --------------------- Location functions ---------------------
 // function to get location data
 function getLocation(city) {
@@ -112,7 +123,7 @@ function getLocationDB(city) {
 
 // Save location data to database
 function saveLocationToDB(data) {
-  console.log('save', data);
+  // console.log('save', data);
   let sql = `INSERT INTO location (search_query,formatted_query,latitude,longitude,region) VALUES ($1,$2,$3,$4,$5)`;
   let values = [
     data.search_query,
@@ -180,6 +191,27 @@ function getMovies(region) {
   return data;
 }
 
+// --------------------- Yelp functions ---------------------
+
+function getYelp(lat, lon) {
+  let url = `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${lat}&longitude=${lon}`;
+  let data = superagent
+    .get(url)
+    .set('Authorization', `Bearer ${YELP_API_KEY}`)
+    .then((res) => {
+      // console.log(res.body.businesses);
+      return res.body.businesses.map((e) => {
+        return new Yelp(e);
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return data;
+}
+
+
+// ******************** Constructors ********************
 
 // constructor function formate the location responed data
 function Location(city, data) {
@@ -224,5 +256,12 @@ function Movies(data) {
 }
 
 
-
+// constructor function formate the location responed data
+function Yelp(data) {
+  this.name = data.name;
+  this.image_url = data.image_url;
+  this.price = data.price;
+  this.rating = data.rating;
+  this.url = data.url;
+}
 
