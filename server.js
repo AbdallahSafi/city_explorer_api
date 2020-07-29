@@ -30,6 +30,8 @@ const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 //API key for hiking
 const TRAIL_API_KEY = process.env.TRAIL_API_KEY;
 
+//API key for Movies
+const MOVIE_API_KEY = process.env.MOVIE_API_KEY;
 // Test the server and connect to database
 db.connect().then(() => {
   server.listen(PORT, () => {
@@ -154,13 +156,13 @@ function getTrails(lat, lon) {
 // --------------------- Movies functions ---------------------
 
 // function to get movies data
-function getMovies(lat, lon) {
-  let url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=1000&key=${TRAIL_API_KEY}`;
+function getMovies(region) {
+  let url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${MOVIE_API_KEY}&language=en-US&page=1&region=${region}`;
   let data = superagent
     .get(url)
     .then((res) => {
-      return res.body.trails.map((e) => {
-        return new Trails(e);
+      return res.body.results.map((e) => {
+        return new Movies(e);
       });
     })
     .catch((error) => {
@@ -203,13 +205,13 @@ function Trails(data) {
 
 // constructor function formate the location responed data
 function Movies(data) {
-  this.title = data.name;
-  this.overview = data.location;
-  this.average_votes = data.length;
-  this.total_votes = data.stars;
-  this.image_url = data.starVotes;
-  this.popularity = data.summary;
-  this.released_on = data.url;
+  this.title = data.title;
+  this.overview = data.overview;
+  this.average_votes = data.vote_average;
+  this.total_votes = data.vote_count;
+  this.image_url = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+  this.popularity = data.popularity;
+  this.released_on = data.release_date;
 }
 
 
