@@ -194,7 +194,7 @@ function getMovies(region) {
 // --------------------- Yelp functions ---------------------
 
 function getYelp(lat, lon) {
-  let url = `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${lat}&longitude=${lon}`;
+  let url = `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${lat}&longitude=${lon}&limit=5`;
   let data = superagent
     .get(url)
     .set('Authorization', `Bearer ${YELP_API_KEY}`)
