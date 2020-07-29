@@ -39,7 +39,9 @@ db.connect().then(() => {
   });
 });
 
-// localhost:3010/location?city = gaza
+// ------------------------ Routes handling --------------------
+
+// location
 server.get("/location", async (request, response) => {
   let city = request.query.city;
   let status = 200;
@@ -56,7 +58,7 @@ server.get("/location", async (request, response) => {
   }
 });
 
-// localhost:3010/weather
+// weather
 server.get("/weather", async (request, response) => {
   let lat = request.query.latitude;
   let lon = request.query.longitude;
@@ -64,7 +66,7 @@ server.get("/weather", async (request, response) => {
   response.status(status).send(await getWeather(lat, lon));
 });
 
-// localhost:3010/trails
+// trails
 server.get("/trails", async (request, response) => {
   let lat = request.query.latitude;
   let lon = request.query.longitude;
@@ -72,7 +74,7 @@ server.get("/trails", async (request, response) => {
   response.status(status).send(await getTrails(lat, lon));
 });
 
-// localhost:3010/movies
+// movies
 server.get("/movies", async (request, response) => {
   let region = request.query.region;
   let status = 200;
@@ -105,12 +107,13 @@ function getLocationDB(city) {
 }
 
 function saveLocationToDB(data) {
-  let sql = `INSERT INTO location (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4)`;
+  let sql = `INSERT INTO location (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4,$5)`;
   let values = [
     data.search_query,
     data.formatted_query,
     data.latitude,
     data.longitude,
+    data.region
   ];
   return db
     .query(sql, values)
