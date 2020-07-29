@@ -44,8 +44,9 @@ server.get("/location", async (request, response) => {
   let dataRetrived = await getLocationDB(city);
   if (dataRetrived.length === 0) {
     await getLocation(city).then((data) => {
-      saveToDB(data);
-      response.status(status).send(data);
+      saveLocationToDB(data).then((savedData) => {
+        response.status(status).send(savedData);
+      });
     });
   } else {
     delete dataRetrived[0].id;
@@ -83,6 +84,33 @@ function getLocation(city) {
   return data;
 }
 
+// function to check the database for exist value
+function getLocationDB(city) {
+  let sql = `SELECT * FROM location WHERE search_query=$1;`;
+  let values = [city];
+  return db.query(sql, values).then((result) => {
+    return result.rows;
+  });
+}
+
+function saveLocationToDB(data) {
+  let sql = `INSERT INTO location (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4)`;
+  let values = [
+    data.search_query,
+    data.formatted_query,
+    data.latitude,
+    data.longitude,
+  ];
+  return db
+    .query(sql, values)
+    .then((result) => {
+      return data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
 // function to get weather data
 function getWeather(city) {
   let url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${WEATHER_API_KEY}&days=5`;
@@ -104,8 +132,8 @@ function getTrails(lat, lon) {
         return new Trails(e);
       });
     })
-    .catch((e) => {
-      console.log(e);
+    .catch((error) => {
+      console.log(error);
     });
   return data;
 }
@@ -138,27 +166,4 @@ function Trails(data) {
   let day = new Date(data.conditionDate);
   this.condition_date = day.toLocaleDateString();
   this.condition_time = day.toLocaleTimeString("en-US");
-}
-
-// function to check the database for exist value
-function getLocationDB(city) {
-  let sql = `SELECT * FROM location WHERE search_query=$1;`;
-  let values = [city];
-  return db.query(sql, values).then((result) => {
-    return result.rows;
-  });
-}
-
-function saveToDB(data) {
-  console.log("before saving", data);
-  let sql = `INSERT INTO location (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4)`;
-  let values = [
-    data.search_query,
-    data.formatted_query,
-    data.latitude,
-    data.longitude,
-  ];
-  db.query(sql, values).then((result) => {
-    console.log("saved", result.rows);
-  });
 }
