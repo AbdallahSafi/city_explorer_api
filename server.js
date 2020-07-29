@@ -54,7 +54,7 @@ server.get("/location", async (request, response) => {
   }
 });
 
-// localhost:3010/weather?search_query=gaza
+// localhost:3010/weather
 server.get("/weather", async (request, response) => {
   let lat = request.query.latitude;
   let lon = request.query.longitude;
@@ -70,12 +70,20 @@ server.get("/trails", async (request, response) => {
   response.status(status).send(await getTrails(lat, lon));
 });
 
+// localhost:3010/movies
+server.get("/movies", async (request, response) => {
+  let region = request.query.region;
+  let status = 200;
+  response.status(status).send(await getMovies(region));
+});
+
+
 // handle 500 error
 server.all("*", (request, response) => {
   let status = 404;
   response.status(status).send("Not Found");
 });
-
+// --------------------- Location functions ---------------------
 // function to get location data
 function getLocation(city) {
   let url = `https://api.locationiq.com/v1/autocomplete.php?key=${GEOCODE_API_KEY}&q=${city}`;
@@ -112,6 +120,8 @@ function saveLocationToDB(data) {
     });
 }
 
+// --------------------- Weather functions ---------------------
+
 // function to get weather data
 function getWeather(lat, lon) {
   let url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${WEATHER_API_KEY}&days=5`;
@@ -123,7 +133,9 @@ function getWeather(lat, lon) {
   return data;
 }
 
-// function to get weather data
+// --------------------- Trails functions ---------------------
+
+// function to get Trails data
 function getTrails(lat, lon) {
   let url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=1000&key=${TRAIL_API_KEY}`;
   let data = superagent
@@ -139,12 +151,32 @@ function getTrails(lat, lon) {
   return data;
 }
 
+// --------------------- Movies functions ---------------------
+
+// function to get movies data
+function getMovies(lat, lon) {
+  let url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=1000&key=${TRAIL_API_KEY}`;
+  let data = superagent
+    .get(url)
+    .then((res) => {
+      return res.body.trails.map((e) => {
+        return new Trails(e);
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return data;
+}
+
+
 // constructor function formate the location responed data
 function Location(city, data) {
   this.search_query = city;
   this.formatted_query = data[0].display_name;
   this.latitude = data[0].lat;
   this.longitude = data[0].lon;
+  this.region = data[0].address.country_code.toUpperCase();
 }
 
 // constructor function formate the weather responed data
@@ -169,4 +201,15 @@ function Trails(data) {
   this.condition_time = day.toLocaleTimeString("en-US");
 }
 
-// https://ascity-explorer.herokuapp.com/weather?search_query=moscow&formatted_query=Moscow%2C%20Moscow%2C%20Russia&latitude=55.7504461&longitude=37.6174943&page=1
+// constructor function formate the location responed data
+function Movies(data) {
+  this.title = data.name;
+  this.overview = data.location;
+  this.average_votes = data.length;
+  this.total_votes = data.stars;
+  this.image_url = data.starVotes;
+  this.popularity = data.summary;
+  this.released_on = data.url;
+}
+
+
