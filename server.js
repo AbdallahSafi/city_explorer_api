@@ -106,8 +106,10 @@ function getLocationDB(city) {
   });
 }
 
+// Save location data to database
 function saveLocationToDB(data) {
-  let sql = `INSERT INTO location (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4,$5)`;
+  console.log('save', data);
+  let sql = `INSERT INTO location (search_query,formatted_query,latitude,longitude,region) VALUES ($1,$2,$3,$4,$5)`;
   let values = [
     data.search_query,
     data.formatted_query,
@@ -121,7 +123,7 @@ function saveLocationToDB(data) {
       return data;
     })
     .catch((error) => {
-      console.log(error);
+      console.log('error', error);
     });
 }
 
