@@ -56,9 +56,10 @@ server.get("/location", async (request, response) => {
 
 // localhost:3010/weather?search_query=gaza
 server.get("/weather", async (request, response) => {
-  let city = request.query.search_query;
+  let lat = request.query.latitude;
+  let lon = request.query.longitude;
   let status = 200;
-  response.status(status).send(await getWeather(city));
+  response.status(status).send(await getWeather(lat, lon));
 });
 
 // localhost:3010/trails
@@ -112,8 +113,8 @@ function saveLocationToDB(data) {
 }
 
 // function to get weather data
-function getWeather(city) {
-  let url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${WEATHER_API_KEY}&days=5`;
+function getWeather(lat, lon) {
+  let url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${WEATHER_API_KEY}&days=5`;
   let data = superagent.get(url).then((res) => {
     return res.body.data.map((e) => {
       return new Weather(e);
@@ -167,3 +168,5 @@ function Trails(data) {
   this.condition_date = day.toLocaleDateString();
   this.condition_time = day.toLocaleTimeString("en-US");
 }
+
+// https://ascity-explorer.herokuapp.com/weather?search_query=moscow&formatted_query=Moscow%2C%20Moscow%2C%20Russia&latitude=55.7504461&longitude=37.6174943&page=1
