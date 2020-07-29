@@ -32,6 +32,10 @@ const TRAIL_API_KEY = process.env.TRAIL_API_KEY;
 
 //API key for Movies
 const MOVIE_API_KEY = process.env.MOVIE_API_KEY;
+
+//API key for yelp
+const YELP_API_KEY = process.env.YELP_API_KEY;
+
 // Test the server and connect to database
 db.connect().then(() => {
   server.listen(PORT, () => {
@@ -218,5 +222,7 @@ function Movies(data) {
   this.popularity = data.popularity;
   this.released_on = data.release_date;
 }
+
+
 
 
