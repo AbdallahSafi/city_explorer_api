@@ -89,8 +89,9 @@ server.get("/movies", async (request, response) => {
 server.get("/yelp", async (request, response) => {
   let lat = request.query.latitude;
   let lon = request.query.longitude;
+  let page = request.query.page;
   let status = 200;
-  response.status(status).send(await getYelp(lat, lon));
+  response.status(status).send(await getYelp(lat, lon, page));
 });
 
 
@@ -193,8 +194,9 @@ function getMovies(region) {
 
 // --------------------- Yelp functions ---------------------
 
-function getYelp(lat, lon) {
-  let url = `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${lat}&longitude=${lon}&limit=5`;
+function getYelp(lat, lon, page) {
+  let offset = (page - 1) * 5;
+  let url = `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${lat}&longitude=${lon}&limit=5&offset=${offset}`;
   let data = superagent
     .get(url)
     .set('Authorization', `Bearer ${YELP_API_KEY}`)
