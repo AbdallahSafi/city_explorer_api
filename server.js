@@ -94,22 +94,26 @@ server.get("/yelp", async (request, response) => {
   response.status(status).send(await getYelp(lat, lon, page));
 });
 
-
-
-// handle 500 error
+// handle 404 error
 server.all("*", (request, response) => {
   let status = 404;
   response.status(status).send("Not Found");
 });
 
-
 // --------------------- Location functions ---------------------
 // function to get location data
 function getLocation(city) {
-  let url = `https://api.locationiq.com/v1/autocomplete.php?key=${GEOCODE_API_KEY}&q=${city}`;
-  let data = superagent.get(url).then((res) => {
-    return new Location(city, res.body);
-  });
+  let url = "https://api.locationiq.com/v1/autocomplete.php";
+  let queryParams = {
+    key: GEOCODE_API_KEY,
+    q: city,
+  };
+  let data = superagent
+    .get(url)
+    .query(queryParams)
+    .then((res) => {
+      return new Location(city, res.body);
+    });
   return data;
 }
 
@@ -131,7 +135,7 @@ function saveLocationToDB(data) {
     data.formatted_query,
     data.latitude,
     data.longitude,
-    data.region
+    data.region,
   ];
   return db
     .query(sql, values)
@@ -139,7 +143,7 @@ function saveLocationToDB(data) {
       return data;
     })
     .catch((error) => {
-      console.log('error', error);
+      console.log("error", error);
     });
 }
 
@@ -147,12 +151,21 @@ function saveLocationToDB(data) {
 
 // function to get weather data
 function getWeather(lat, lon) {
-  let url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${WEATHER_API_KEY}&days=5`;
-  let data = superagent.get(url).then((res) => {
-    return res.body.data.map((e) => {
-      return new Weather(e);
+  let url = "https://api.weatherbit.io/v2.0/forecast/daily";
+  let queryParams = {
+    key: WEATHER_API_KEY,
+    lat: lat,
+    lon: lon,
+    days: 5,
+  };
+  let data = superagent
+    .get(url)
+    .query(queryParams)
+    .then((res) => {
+      return res.body.data.map((e) => {
+        return new Weather(e);
+      });
     });
-  });
   return data;
 }
 
@@ -160,9 +173,16 @@ function getWeather(lat, lon) {
 
 // function to get Trails data
 function getTrails(lat, lon) {
-  let url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=1000&key=${TRAIL_API_KEY}`;
+  let url = "https://www.hikingproject.com/data/get-trails";
+  let queryParams = {
+    key: TRAIL_API_KEY,
+    lat: lat,
+    lon: lon,
+    maxDistance: 1000,
+  };
   let data = superagent
     .get(url)
+    .query(queryParams)
     .then((res) => {
       return res.body.trails.map((e) => {
         return new Trails(e);
@@ -178,9 +198,16 @@ function getTrails(lat, lon) {
 
 // function to get movies data
 function getMovies(region) {
-  let url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${MOVIE_API_KEY}&language=en-US&page=1&region=${region}`;
+  let url = "https://api.themoviedb.org/3/movie/top_rated";
+  let queryParams = {
+    api_key: MOVIE_API_KEY,
+    language: 'en-US',
+    page: 1,
+    region: region,
+  };
   let data = superagent
     .get(url)
+    .query(queryParams)
     .then((res) => {
       return res.body.results.map((e) => {
         return new Movies(e);
@@ -196,12 +223,19 @@ function getMovies(region) {
 
 function getYelp(lat, lon, page) {
   let offset = (page - 1) * 5;
-  let url = `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${lat}&longitude=${lon}&limit=5&offset=${offset}`;
+  let url = "https://api.yelp.com/v3/businesses/search";
+  let queryParams = {
+    term: 'restaurants',
+    latitude: lat,
+    longitude: lon,
+    limit: 5,
+    offset: offset,
+  };
   let data = superagent
     .get(url)
-    .set('Authorization', `Bearer ${YELP_API_KEY}`)
+    .query(queryParams)
+    .set("Authorization", `Bearer ${YELP_API_KEY}`)
     .then((res) => {
-      // console.log(res.body.businesses);
       return res.body.businesses.map((e) => {
         return new Yelp(e);
       });
@@ -211,7 +245,6 @@ function getYelp(lat, lon, page) {
     });
   return data;
 }
-
 
 // ******************** Constructors ********************
 
@@ -257,7 +290,6 @@ function Movies(data) {
   this.released_on = data.release_date;
 }
 
-
 // constructor function formate the location responed data
 function Yelp(data) {
   this.name = data.name;
@@ -266,4 +298,3 @@ function Yelp(data) {
   this.rating = data.rating;
   this.url = data.url;
 }
-
